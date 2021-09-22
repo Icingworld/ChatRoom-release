@@ -26,7 +26,9 @@ Status::Status(QWidget *parent, Server s) :
         ui->realm_name->setText(server.realm);
     }
     udpSocket = new QUdpSocket(this);
-    bool result=udpSocket->bind(server.port.toInt());
+    udpSocket_test = new QUdpSocket(this);
+    bool result = udpSocket->bind(server.port.toInt());
+    udpSocket_test->bind(server.port.toInt() - 1);
     if(!result)
     {
         QMessageBox::information(this,tr("错误"),
@@ -35,7 +37,7 @@ Status::Status(QWidget *parent, Server s) :
         this->close();
         return;
     }else {
-        ui->server_stat->setText("正常");
+        ui->server_stat->setText("检测中");
         sendMessage(NewParticipant,server.name,server.addr,"",server.port.toInt(),"",2);
     }
     connect(udpSocket,&QUdpSocket::readyRead,this,&Status::processPendingDatagrams);
@@ -83,7 +85,7 @@ void Status::sendMessage(MessageType type,QString ClientName,QString ClientAddr,
     }else if (flag == 1) {
         udpSocket->writeDatagram(data,data.length(),QHostAddress(ClientAddr),ClientPort);
     }else if (flag == 2) {
-        udpSocket->writeDatagram(data,data.length(),QHostAddress(server.addr),server.port.toInt());
+        udpSocket_test->writeDatagram(data,data.length(),QHostAddress(server.addr),server.port.toInt());
     }
 }
 
@@ -150,6 +152,8 @@ void Status::processPendingDatagrams()
                 {
                     sendMessage(UsrList,client_name,client_ip,"",client_port,"",1);
                 }
+            }else {
+                ui->server_stat->setText("正常");
             }
             break;
         }

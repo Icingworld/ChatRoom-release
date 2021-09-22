@@ -103,7 +103,7 @@
    </property>
    <property name="styleSheet">
     <string notr="true">.QFrame{
-	border-image:url(:/images/登录.png)
+	border-image:url(:/images/login.png)
 }</string>
    </property>
    <property name="frameShape">

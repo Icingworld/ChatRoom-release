@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>登录.png</file>
+        <file>注册.png</file>
+        <file>loading.gif</file>
+        <file>correct.png</file>
+        <file>pic.png</file>
+        <file>save.png</file>
+        <file>clear.png</file>
+    </qresource>
+</RCC>

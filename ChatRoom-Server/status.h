@@ -54,6 +54,7 @@ private:
     Server server;
     Ttime ttime;
     QUdpSocket *udpSocket;
+    QUdpSocket *udpSocket_test;
     QTimer *timer;
     QList<int> port_list;
     QList<int> temp_port;

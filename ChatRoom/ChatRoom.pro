@@ -41,8 +41,7 @@ DISTFILES += \
     Resources/loading.gif \
     Resources/pic.png \
     Resources/save.png \
-    Resources/注册.png \
-    Resources/登录.png
+    Resources/login.png \
 
 RESOURCES += \
     Resources/Resources.qrc

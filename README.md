@@ -1,1 +1,3 @@
 # ChatRoom-release
+
+for macOS

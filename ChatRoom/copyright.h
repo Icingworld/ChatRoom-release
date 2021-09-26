@@ -15,6 +15,9 @@ public:
     explicit copyright(QWidget *parent = nullptr);
     ~copyright();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::copyright *ui;
 };

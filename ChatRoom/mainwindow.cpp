@@ -10,7 +10,7 @@
 #include <QColorDialog>
 #include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent, User u, int port_) :
+MainWindow::MainWindow(QWidget *parent, User u, int port_, QString ip_server) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -24,7 +24,9 @@ MainWindow::MainWindow(QWidget *parent, User u, int port_) :
     udpSocket = new QUdpSocket(this);
     port = port_ + 1;
     server_port = port_;
-    server_ip = "";
+    //getServerIP();
+    server_ip = ip_server;
+    IP = ip_server;
     timer = new QTimer();
     connect(timer,&QTimer::timeout,this,&MainWindow::Call);
     ui->server_stst->setText("连接中");
@@ -73,12 +75,7 @@ void MainWindow::sendMessage(MessageType type,QString ClientAddr="")
     case Check:
         break;
     }
-    if(server_ip == "")
-    {
-        udpSocket->writeDatagram(data,data.length(),QHostAddress::Broadcast,server_port);
-    }else {
-        udpSocket->writeDatagram(data,data.length(),QHostAddress(server_ip),server_port);
-    }
+    udpSocket->writeDatagram(data,data.length(),QHostAddress(server_ip),server_port);
 }
 
 void MainWindow::processPendingDatagrams()
@@ -123,6 +120,7 @@ void MainWindow::processPendingDatagrams()
             int all_num;
             in >> all_num;
             in >> server_ip;
+            server_ip = IP;
             for (int x = 0;x < all_num;x++)
             {
                 in >> get_name >> get_ip >> get_port;
@@ -325,6 +323,25 @@ void MainWindow::Call()
             return;
         }
     }
+}
+
+//这个因为域名要备案，暂时不考虑了
+void MainWindow::getServerIP()
+{
+    QNetworkAccessManager *m_pHttpMgr = new QNetworkAccessManager();
+        QString url = "http://fducse.top/ChatRoom.php";
+        QNetworkRequest requestInfo;
+        requestInfo.setUrl(QUrl(url));
+        QEventLoop eventLoop;
+        QNetworkReply *reply =  m_pHttpMgr->get(requestInfo);
+        connect(reply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
+        eventLoop.exec();
+
+        QByteArray responseByte = reply->readAll();
+        responseByte = responseByte.left(responseByte.size() - 1);
+        //server_ip = responseByte;
+        qDebug() << 1 << server_ip;
+        qDebug() << 2 << responseByte;
 }
 
 void MainWindow::on_sendPicBtn_clicked()

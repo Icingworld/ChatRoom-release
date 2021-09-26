@@ -37,11 +37,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     Resources/clear.png \
-    Resources/correct.png \
-    Resources/loading.gif \
     Resources/pic.png \
     Resources/save.png \
-    Resources/login.png \
+    Resources/login.png
 
 RESOURCES += \
     Resources/Resources.qrc

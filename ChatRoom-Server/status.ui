@@ -18,7 +18,7 @@
     <rect>
      <x>70</x>
      <y>150</y>
-     <width>91</width>
+     <width>111</width>
      <height>16</height>
     </rect>
    </property>
@@ -31,7 +31,7 @@
     <rect>
      <x>70</x>
      <y>190</y>
-     <width>59</width>
+     <width>81</width>
      <height>16</height>
     </rect>
    </property>
@@ -44,7 +44,7 @@
     <rect>
      <x>70</x>
      <y>230</y>
-     <width>71</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -57,7 +57,7 @@
     <rect>
      <x>70</x>
      <y>270</y>
-     <width>59</width>
+     <width>91</width>
      <height>16</height>
     </rect>
    </property>
@@ -70,7 +70,7 @@
     <rect>
      <x>70</x>
      <y>110</y>
-     <width>71</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -83,7 +83,7 @@
     <rect>
      <x>70</x>
      <y>310</y>
-     <width>59</width>
+     <width>81</width>
      <height>16</height>
     </rect>
    </property>
@@ -94,8 +94,8 @@
   <widget class="QPushButton" name="closeBtn">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>350</y>
+     <x>220</x>
+     <y>360</y>
      <width>113</width>
      <height>41</height>
     </rect>
@@ -107,14 +107,14 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>80</x>
      <y>30</y>
-     <width>191</width>
+     <width>281</width>
      <height>51</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;ChatRoom-Server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;ChatRoom-Server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLabel" name="role">
@@ -134,9 +134,9 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>150</y>
-     <width>85</width>
-     <height>16</height>
+     <y>148</y>
+     <width>111</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
@@ -198,7 +198,7 @@
   <widget class="QLabel" name="label_14">
    <property name="geometry">
     <rect>
-     <x>285</x>
+     <x>300</x>
      <y>148</y>
      <width>16</width>
      <height>16</height>
@@ -211,7 +211,7 @@
   <widget class="QLabel" name="port_num">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>320</x>
      <y>150</y>
      <width>59</width>
      <height>16</height>
@@ -342,6 +342,82 @@
     </property>
    </column>
   </widget>
+  <widget class="QPushButton" name="change">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>361</y>
+     <width>113</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查看日志</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="Log" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>707</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <widget class="QTextBrowser" name="logMessage">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>30</y>
+      <width>591</width>
+      <height>311</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="waitinglabel">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>180</y>
+     <width>50</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/images/loading.gif);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>label</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
+  <zorder>label_4</zorder>
+  <zorder>label_5</zorder>
+  <zorder>label_6</zorder>
+  <zorder>closeBtn</zorder>
+  <zorder>label_7</zorder>
+  <zorder>role</zorder>
+  <zorder>ip_addr</zorder>
+  <zorder>realm_name</zorder>
+  <zorder>server_stat</zorder>
+  <zorder>usr_online</zorder>
+  <zorder>day</zorder>
+  <zorder>label_14</zorder>
+  <zorder>port_num</zorder>
+  <zorder>hour</zorder>
+  <zorder>day_3</zorder>
+  <zorder>minute</zorder>
+  <zorder>day_5</zorder>
+  <zorder>day_6</zorder>
+  <zorder>second</zorder>
+  <zorder>day_8</zorder>
+  <zorder>usr_info</zorder>
+  <zorder>change</zorder>
+  <zorder>waitinglabel</zorder>
+  <zorder>Log</zorder>
  </widget>
  <resources/>
  <connections/>

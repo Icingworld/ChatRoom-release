@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
     setFixedSize(this->width(),this->height());
     ui->pswd->setFocus();
-    ui->ip_addr->setText(getIP());
     connect(ui->actionReadMe, SIGNAL(triggered()), this, SLOT(actionReadMe_clicked()));
 }
 

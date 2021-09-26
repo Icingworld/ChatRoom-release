@@ -40,13 +40,18 @@ void login::on_pushButton_2_clicked()
         return;
     } else if (ui->lineEdit_2->text() == "") {
         QMessageBox::warning(0,tr("警告"),
-                             tr("请服务器端口"),QMessageBox::Ok);
+                             tr("请输入服务器端口"),QMessageBox::Ok);
+        return;
+    } else if (ui->ip_server->text() == "")
+    {
+        QMessageBox::warning(0,tr("警告"),
+                             tr("请输入服务器IP"),QMessageBox::Ok);
         return;
     } else {
         this->close();
         users.hostaddress = getIP();
         users.address = getIP();
-        mainwindow = new MainWindow(0, users, ui->lineEdit_2->text().toInt());
+        mainwindow = new MainWindow(0, users, ui->lineEdit_2->text().toInt(), ui->ip_server->text());
         mainwindow->show();
     }
 }

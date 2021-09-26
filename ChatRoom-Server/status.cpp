@@ -4,7 +4,11 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDateTime>
+#include <QColor>
 #include <QList>
+#include <QMovie>
+#include <QFileDialog>
+#include <QFile>
 
 Status::Status(QWidget *parent, Server s) :
     QWidget(parent),
@@ -14,6 +18,8 @@ Status::Status(QWidget *parent, Server s) :
     setWindowFlags(windowFlags()&~Qt::WindowMaximizeButtonHint);
     setFixedSize(this->width(),this->height());
     setServer(s);
+    ui->waitinglabel->setVisible(0);
+    ui->Log->setVisible(0);
     ui->role->setText(server.name);
     ui->ip_addr->setText(server.addr);
     ui->port_num->setText(server.port);
@@ -26,9 +32,7 @@ Status::Status(QWidget *parent, Server s) :
         ui->realm_name->setText(server.realm);
     }
     udpSocket = new QUdpSocket(this);
-    udpSocket_test = new QUdpSocket(this);
     bool result = udpSocket->bind(server.port.toInt());
-    udpSocket_test->bind(server.port.toInt() - 1);
     if(!result)
     {
         QMessageBox::information(this,tr("错误"),
@@ -61,8 +65,12 @@ void Status::sendMessage(MessageType type,QString ClientName,QString ClientAddr,
 
     switch (type) {
     case Message:
+    {
+        QString temp = QString::number(ClientPort,10);
+        log(Message,"发送消息： " + ClientName + "   " + ClientAddr + "   " + temp + "   " + SendTime + "   " + SendData);
         out << SendTime << SendData;
         break;
+    }
     case NewParticipant:
         break;
     case ParticipantLeft:
@@ -72,6 +80,7 @@ void Status::sendMessage(MessageType type,QString ClientName,QString ClientAddr,
         out << server.addr;
         for (int xx = 0;xx < ui->usr_online->text().toInt();xx++) {
             out << ui->usr_info->item(xx,0)->text() << ui->usr_info->item(xx,1)->text() << ui->usr_info->item(xx,2)->text().toInt();
+            log(UsrList,"在线列表：" + ui->usr_info->item(xx,0)->text() + "   " + ui->usr_info->item(xx,1)->text() + "   " + ui->usr_info->item(xx,2)->text());
         }
         break;
     case Check:
@@ -79,22 +88,30 @@ void Status::sendMessage(MessageType type,QString ClientName,QString ClientAddr,
     }
     if(flag == 0)
     {
-        for (int x = 0;x < port_list.size();x++) {
-            udpSocket->writeDatagram(data,data.length(),QHostAddress::Broadcast,port_list[x]);
+        for (int i = 0;i < ui->usr_online->text().toInt();i++) {
+            if(type == Check) {
+                log(Check,"询问用户：" + ui->usr_info->item(i,0)->text() + "   " + ui->usr_info->item(i,1)->text() + "   " + ui->usr_info->item(i,2)->text());
+            }
+            udpSocket->writeDatagram(data,data.length(),QHostAddress(ui->usr_info->item(i,1)->text()),ui->usr_info->item(i,2)->text().toInt());
         }
     }else if (flag == 1) {
+        QString temp = QString::number(ClientPort,10);
+        log(UsrList,"发送列表给："  + ClientName + "   " + ClientAddr + "   " + temp);
         udpSocket->writeDatagram(data,data.length(),QHostAddress(ClientAddr),ClientPort);
     }else if (flag == 2) {
-        udpSocket_test->writeDatagram(data,data.length(),QHostAddress(server.addr),server.port.toInt());
+        udpSocket->writeDatagram(data,data.length(),QHostAddress(server.addr),server.port.toInt());
     }
 }
 
 void Status::processPendingDatagrams()
 {
     while (udpSocket->hasPendingDatagrams()) {
+        QHostAddress client_address;
+        quint16 recPort = 0;
         QByteArray datagram;
         datagram.resize(udpSocket->pendingDatagramSize());
-        udpSocket->readDatagram(datagram.data(),datagram.size());
+        udpSocket->readDatagram(datagram.data(),datagram.size(),&client_address, &recPort);
+        QString temp_port=QString("%1").arg(recPort);
         QDataStream in(&datagram,QIODevice::ReadOnly);
         in >> messageType;
         QString client_ip;
@@ -103,24 +120,29 @@ void Status::processPendingDatagrams()
         QString client_content;
         int client_port = 0;
         in >> client_name >> client_ip;
+        client_ip = client_address.toString().right(client_address.toString().size() - 7);
+        client_port = temp_port.toInt();
         switch (messageType)
         {
         case Message:
+        {
             in >> client_port >> client_time >> client_content;
+            QString temp = QString::number(client_port,10);
+            log(Message,"接收信息： " + client_name + "   " + client_ip + "   " + temp + "   " + client_time + "   " + client_content);
             sendMessage(Message,client_name,client_ip,client_time,client_port,client_content);
             break;
+        }
         case NewParticipant:
         {
-            in >> client_port;
-            if(client_ip != server.addr || client_port != server.port.toInt())
+            if(client_ip != "127.0.0.1" && client_port != server.port.toInt())
             {
+                log(NewParticipant,"新成员：" + client_name + "   " + client_ip + "   " + temp_port);
                 int new_num = ui->usr_online->text().toInt() + 1;
                 QString new_num_ = QString::number(new_num,10);
                 ui->usr_online->setText(new_num_);
                 QTableWidgetItem *user = new QTableWidgetItem(client_name);
                 QTableWidgetItem *ip = new QTableWidgetItem(client_ip);
-                QString port_ = QString::number(client_port,10);
-                QTableWidgetItem *port = new QTableWidgetItem(port_);
+                QTableWidgetItem *port = new QTableWidgetItem(temp_port);
                 ui->usr_info->insertRow(0);
                 ui->usr_info->setItem(0,0,user);
                 ui->usr_info->setItem(0,1,ip);
@@ -128,25 +150,6 @@ void Status::processPendingDatagrams()
                 QString client_status = "1";
                 QTableWidgetItem *status = new QTableWidgetItem(client_status);
                 ui->usr_info->setItem(0,3,status);
-                if(port_list.size() == 0)
-                {
-                    port_list.append(client_port);
-                }else {
-                    for(int x = 0;x < port_list.size();x++)
-                    {
-                        if(port_list[x] == client_port)
-                        {
-                            break;
-                        }else {
-                            if(x == port_list.size() - 1)
-                            {
-                                port_list.append(client_port);
-                            }else {
-                                continue;
-                            }
-                        }
-                    }
-                }
                 sendMessage(NewParticipant,client_name,client_ip,"",client_port,"");
                 if(client_ip != server.addr || client_port != server.port)
                 {
@@ -154,14 +157,17 @@ void Status::processPendingDatagrams()
                 }
             }else {
                 ui->server_stat->setText("正常");
+                log(NewParticipant,"服务器：" + server.name + "   " + server.addr + "   " + server.port);
             }
             break;
         }
         case ParticipantLeft:
         {
             in >> client_port;
+            QString temp = QString::number(client_port,10);
+            log(ParticipantLeft,"成员离开：" + client_name + "   " + client_ip + "   " + temp);
             sendMessage(ParticipantLeft,client_name,client_ip,"",client_port,"");
-            for (int i = 0;i < ui->usr_online->text().toInt();i++) {
+            for (int i = 0;i < ui->usr_info->rowCount();i++) {
                 if(ui->usr_info->item(i,0)->text() == client_name)
                 {
                     if(ui->usr_info->item(i,1)->text() == client_ip && ui->usr_info->item(i,2)->text().toInt() == client_port)
@@ -178,8 +184,10 @@ void Status::processPendingDatagrams()
         }
         case Check:
             in >> client_port;
+            QString temp = QString::number(client_port,10);
+            log(Check,"确认存活：" +  client_name + "   " + client_ip + "   " + temp);
             bool isFound = 0;
-            for (int i = 0;i < ui->usr_online->text().toInt();i++)
+            for (int i = 0;i < ui->usr_info->rowCount();i++)
             {
                 if(ui->usr_info->item(i,0)->text() == client_name)
                 {
@@ -207,7 +215,13 @@ void Status::processPendingDatagrams()
 void Status::on_closeBtn_clicked()
 {
     timer->stop();
+    ui->waitinglabel->setVisible(1);
+    QMovie *movie = new QMovie(":/images/loading.gif");
+    ui->waitinglabel->setMovie(movie);
+    movie->start();
+    savelog();
     sendMessage(ParticipantLeft,"服务器",server.addr,"",5000,"");
+    log(ParticipantLeft,"关闭服务器");
     close();
 }
 
@@ -250,8 +264,9 @@ void Status::display()
     ui->second->setText(second_);
     if(ttime.minutes % 2 == 0 && ttime.seconds == 0)
     {
+        log(Check,"开始询问用户状态");
         sendMessage(Check,server.name,server.addr,"",server.port.toInt(),"");
-        for (int i = 0;i < ui->usr_online->text().toInt();i++) {
+        for (int i = 0;i < ui->usr_info->rowCount();i++) {
             QString zero = "0";
             QTableWidgetItem *temp = new QTableWidgetItem(zero);
             ui->usr_info->setItem(i,3,temp);
@@ -259,43 +274,90 @@ void Status::display()
     }
     if(ttime.minutes % 2 == 0 && ttime.seconds == 15)
     {
-        int temp = ui->usr_online->text().toInt();
-        for (int i = 0;i< ui->usr_online->text().toInt();i++) {
-            if(ui->usr_info->item(i,3)->text() == "0")
-            {
-                sendMessage(ParticipantLeft,ui->usr_info->item(i,0)->text(),ui->usr_info->item(i,1)->text(),"",ui->usr_info->item(i,2)->text().toInt(),"");
-                ui->usr_info->removeRow(i);
-                int new_num = ui->usr_online->text().toInt() - 1;
-                QString new_num_ = QString::number(new_num,10);
-                ui->usr_online->setText(new_num_);
-            }
-        }
-        if(temp != ui->usr_online->text().toInt())
-        {
-            for (int i = 0;i< ui->usr_online->text().toInt();i++) {
-                int port = ui->usr_info->item(i,2)->text().toInt();
-                if(temp_port.size() == 0)
-                {
-                    temp_port.append(port);
-                }else {
-                    for(int x = 0;x < temp_port.size();x++)
-                    {
-                        if(temp_port[x] == port)
-                        {
-                            break;
-                        }else {
-                            if(x == temp_port.size() - 1)
-                            {
-                                temp_port.append(port);
-                            }else {
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-            port_list = temp_port;
-            temp_port.clear();
+        while (clearUsers()) {
         }
     }
+}
+
+bool Status::clearUsers()
+{
+    for (int i = 0;i< ui->usr_info->rowCount();i++) {
+        if(ui->usr_info->item(i,3)->text() == "0")
+        {
+            log(Check,"清理用户：" + ui->usr_info->item(i,0)->text() + "   " + ui->usr_info->item(i,1)->text() + "   " + ui->usr_info->item(i,2)->text());
+            sendMessage(ParticipantLeft,ui->usr_info->item(i,0)->text(),ui->usr_info->item(i,1)->text(),"",ui->usr_info->item(i,2)->text().toInt(),"");
+            ui->usr_info->removeRow(i);
+            int new_num = ui->usr_online->text().toInt() - 1;
+            QString new_num_ = QString::number(new_num,10);
+            ui->usr_online->setText(new_num_);
+            if(ui->usr_online->text().toInt() != ui->usr_info->rowCount())
+            {
+                QString new_num1 = QString::number(ui->usr_info->rowCount(),10);
+                ui->usr_online->setText(new_num1);
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void Status::log(MessageType type,QString data)
+{
+    switch (type) {
+    case Message:
+        ui->logMessage->setTextColor(Qt::blue);
+        ui->logMessage->setCurrentFont(QFont("STHeiti",13));
+        ui->logMessage->append(data);
+        break;
+    case NewParticipant:
+        ui->logMessage->setTextColor(QColor(255,0,0));
+        ui->logMessage->setCurrentFont(QFont("STHeiti",13));
+        ui->logMessage->append(data);
+        break;
+    case ParticipantLeft:
+        ui->logMessage->setTextColor(Qt::red);
+        ui->logMessage->setCurrentFont(QFont("STHeiti",13));
+        ui->logMessage->append(data);
+        break;
+    case UsrList:
+        ui->logMessage->setTextColor(QColor(51, 204, 51));
+        ui->logMessage->setCurrentFont(QFont("STHeiti",13));
+        ui->logMessage->append(data);
+        break;
+    case Check:
+        ui->logMessage->setTextColor(Qt::black);
+        ui->logMessage->setCurrentFont(QFont("STHeiti",13));
+        ui->logMessage->append(data);
+        break;
+    }
+}
+
+void Status::on_change_clicked()
+{
+    if(!ischanged)
+    {
+        ischanged = 1;
+        ui->Log->setVisible(1);
+        ui->usr_info->setVisible(0);
+        ui->closeBtn->setVisible(0);
+        ui->change->setText("状态面板");
+    }else {
+        ischanged = 0;
+        ui->Log->setVisible(0);
+        ui->usr_info->setVisible(1);
+        ui->closeBtn->setVisible(1);
+        ui->change->setText("查看日志");
+    }
+}
+
+void Status::savelog()
+{
+    QDateTime time_now = QDateTime::currentDateTime();
+    QString time_str = time_now.toString("yyyy.MM.dd hh:mm:ss");
+    QString filename = QDir::currentPath() + "/Log.txt";
+    QFile file(filename);
+    file.open(QFile::ReadWrite|QIODevice::Text|QIODevice::Append);
+    QTextStream out(&file);
+    out << time_str + "\n" << ui->logMessage->toPlainText().toUtf8() << "\n";
+    file.close();
 }

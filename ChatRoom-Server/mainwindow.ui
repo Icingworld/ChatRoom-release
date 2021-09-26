@@ -19,7 +19,7 @@
      <rect>
       <x>270</x>
       <y>110</y>
-      <width>113</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
@@ -32,7 +32,7 @@
      <rect>
       <x>270</x>
       <y>160</y>
-      <width>111</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
@@ -42,12 +42,12 @@
      <rect>
       <x>270</x>
       <y>210</y>
-      <width>113</width>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>127.0.0.1</string>
+     <string>101.35.260.195</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -66,7 +66,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>440</x>
       <y>210</y>
       <width>16</width>
       <height>16</height>
@@ -81,7 +81,7 @@
      <rect>
       <x>150</x>
       <y>160</y>
-      <width>59</width>
+      <width>91</width>
       <height>16</height>
      </rect>
     </property>
@@ -107,7 +107,7 @@
      <rect>
       <x>150</x>
       <y>110</y>
-      <width>81</width>
+      <width>91</width>
       <height>16</height>
      </rect>
     </property>
@@ -118,7 +118,7 @@
    <widget class="QLineEdit" name="port_num">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>450</x>
       <y>210</y>
       <width>41</width>
       <height>21</height>
@@ -131,21 +131,21 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>150</x>
       <y>30</y>
-      <width>191</width>
+      <width>291</width>
       <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;ChatRoom-Server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt;&quot;&gt;ChatRoom-Server&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>208</y>
+      <x>400</x>
+      <y>210</y>
       <width>30</width>
       <height>21</height>
      </rect>
@@ -170,7 +170,7 @@
    <widget class="QLineEdit" name="pswd">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>200</x>
       <y>280</y>
       <width>121</width>
       <height>21</height>
@@ -198,7 +198,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionReadMe"/>
-    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuHelp"/>
   </widget>
@@ -206,11 +205,6 @@
   <action name="actionReadMe">
    <property name="text">
     <string>ReadMe</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
    </property>
   </action>
  </widget>

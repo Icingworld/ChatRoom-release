@@ -198,7 +198,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionReadMe"/>
-    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuHelp"/>
   </widget>
@@ -206,11 +205,6 @@
   <action name="actionReadMe">
    <property name="text">
     <string>ReadMe</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
    </property>
   </action>
  </widget>

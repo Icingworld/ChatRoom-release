@@ -44,6 +44,8 @@ protected:
     void sendMessage(MessageType type,QString ClientName,QString ClientAddr,QString SendTime,int ClientPort,QString SendData,int flag);
     void log(MessageType type,QString data);
     void savelog();
+    bool clearUsers();
+    //void searchUsr(QString ClientName); 这个做登录界面重复用户名判断，暂时不用
 
 private slots:
     void on_closeBtn_clicked();
@@ -56,10 +58,7 @@ private:
     Server server;
     Ttime ttime;
     QUdpSocket *udpSocket;
-    QUdpSocket *udpSocket_test;
     QTimer *timer;
-    QList<int> port_list;
-    QList<int> temp_port;
     bool ischanged = 0;
     int port;
     int client_port;

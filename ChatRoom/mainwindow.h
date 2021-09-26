@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 #include <QUdpSocket>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QVariant>
+#include <QByteArray>
+#include <QString>
 #include "copyright.h"
 
 QT_BEGIN_NAMESPACE
@@ -28,7 +34,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr, User u = {"","",""}, int port_ = 0);
+    MainWindow(QWidget *parent = nullptr, User u = {"","",""}, int port_ = 0, QString ip_server = "");
     ~MainWindow();
     void setUser(User u);
 
@@ -40,6 +46,7 @@ protected:
     void getParticipantLeft(QString usr_name,QString usr_ip,int usr_port);
     void disPlay(MessageType type,QString usr_name,QString sendTime,QString content);
     void keyPressEvent(QKeyEvent *event);
+    void getServerIP();
 
 private slots:
     void on_clearToolBtn_clicked();
@@ -59,11 +66,12 @@ private:
     User user;
     QColor color;
     QString server_ip;
+    QString IP;
     int messageType;
     int port;
     int server_port;
     int new_num;
-    int time_out;
+    int time_out = 0;
     bool isConn = 0;
 };
 #endif // MAINWINDOW_H
